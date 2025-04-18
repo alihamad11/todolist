@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo list</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">Todo List</h1>
+        
+        <div class="input-container">
+            <input type="text" class="task-input" placeholder="Add a new task...">
+            <button class="add-btn">Add</button>
+        </div>
+        
+        <div class="filter-container">
+            <button class="filter-btn" data-filter="all">All</button>
+            <button class="filter-btn" data-filter="pending">Pending</button>
+            <button class="filter-btn" data-filter="completed">Completed</button>
+        </div>
+        
+        <ul class="task-list"></ul>
+    </div>
+
+    <script>
+        document.querySelector('.add-btn').addEventListener('click', addTask);
+        document.querySelector('.task-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') addTask();
+        });
+        
+        function addTask() {
+            const taskInput = document.querySelector('.task-input');
+            const taskText = taskInput.value.trim();
+            
+            if (taskText) {
+                const taskItem = document.createElement('li');
+                taskItem.className = 'task-item';
+                
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.className = 'task-checkbox';
+                checkbox.addEventListener('change', toggleComplete);
+                
+                const span = document.createElement('span');
+                span.className = 'task-text';
+                span.textContent = taskText;
+                
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'delete-btn';
+                deleteBtn.textContent = 'Delete';
+                deleteBtn.addEventListener('click', deleteTask);
+                
+                taskItem.appendChild(checkbox);
+                taskItem.appendChild(span);
+                taskItem.appendChild(deleteBtn);
+                
+                document.querySelector('.task-list').appendChild(taskItem);
+                taskInput.value = '';
+            }
+        }
+        
+        function toggleComplete(e) {
+            const taskText = e.target.nextElementSibling;
+            taskText.classList.toggle('completed');
+        }
+        
+        function deleteTask(e) {
+            e.target.parentElement.remove();
+        }
+        
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', filterTasks);
+        });
+        
+        function filterTasks(e) {
+            const filter = e.target.dataset.filter;
+            const tasks = document.querySelectorAll('.task-item');
+            
+            tasks.forEach(task => {
+                const isCompleted = task.querySelector('.task-text').classList.contains('completed');
+                
+                if (filter === 'all') {
+                    task.style.display = 'flex';
+                } else if (filter === 'completed' && !isCompleted) {
+                    task.style.display = 'none';
+                } else if (filter === 'pending' && isCompleted) {
+                    task.style.display = 'none';
+                } else {
+                    task.style.display = 'flex';
+                }
+            });
+        }
+    </script>
+    
+</body>
+</html>
